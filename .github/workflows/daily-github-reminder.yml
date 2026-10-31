@@ -23,25 +23,30 @@ jobs:
               year: 'numeric'
             });
 
+            const bodyContent = [
+              '### 🟩 Waktunya Review Progres & Hijaukan GitHub Hari Ini!',
+              '',
+              `Halo @${context.repo.owner}! Jam sudah menunjukkan pukul **22:00**.`,
+              '',
+              '**Checklist Hari Ini:**',
+              '- [ ] Belajar sintaks JavaScript / konsep web modern',
+              '- [ ] Eksperimen kode di proyek portofolio Zenrixa',
+              '- [ ] Jalankan `git add .`, `git commit`, dan `git push`',
+              '',
+              '---',
+              '> 💡 **Trik Ampuh (Jika Laptop Sedang Mati):**',
+              '> Kamu bisa langsung membalas (*comment*) atau menutup (*close issue*) ini langsung dari aplikasi **GitHub Mobile** di HP-mu.',
+              '> Aktivitas tersebut resmi dihitung sebagai kontribusi dan **langsung membuat profil GitHub-mu hijau hari ini!** 🚀'
+            ].join('\n');
+
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `⏰ [Daily Reminder] Waktunya Hijaukan GitHub! (${today})`,
-              body: `### 🟩 Waktunya Review Progres & Hijaukan GitHub Hari Ini!
-
-Halo @${context.repo.owner}! Jam sudah menunjukkan pukul **22:00**.
-
-**Checklist Hari Ini:**
-- [ ] Belajar sintaks JavaScript / konsep web modern
-- [ ] Eksperimen kode di proyek portofolio Zenrixa
-- [ ] Jalankan \`git add .\`, \`git commit\`, dan \`git push\`
-
----
-> 💡 **Trik Ampuh (Jika Laptop Sedang Mati):**
-> Kamu bisa langsung membalas (*comment*) atau menutup (*close issue*) ini langsung dari aplikasi **GitHub Mobile** di HP-mu.
-> Aktivitas tersebut resmi dihitung sebagai kontribusi dan **langsung membuat profil GitHub-mu hijau hari ini!** 🚀`,
+              body: bodyContent,
               assignees: [context.repo.owner],
               labels: ['daily-reminder', 'consistency']
             });
 
             console.log(`Berhasil membuat issue pengingat: ${issue.data.html_url}`);
+
