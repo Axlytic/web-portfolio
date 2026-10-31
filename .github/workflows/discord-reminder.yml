@@ -1,0 +1,36 @@
+name: Daily Discord Reminder
+
+on:
+  schedule:
+    # 14:00 UTC = 22:00 (10 Malam) WITA / UTC+8
+    - cron: '0 14 * * *'
+  workflow_dispatch: # Memungkinkan tombol "Run workflow" untuk uji coba kapan saja
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Reminder
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK belum disetel di GitHub Secrets. Silakan tambahkan DISCORD_WEBHOOK di Settings -> Secrets."
+            exit 1
+          fi
+          
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "username": "GitHub Green Sentinel",
+              "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              "embeds": [{
+                "title": "⏰ Waktunya Menghijaukan GitHub!",
+                "description": "Halo **Ehan**! Waktu sudah menunjukkan pukul **22:00**.\n\nJangan lupa luangkan waktu sejenak untuk mereview progres hari ini dan jalankan:\n```bash\ngit add .\ngit commit -m \"update: daily progress\"\ngit push\n```\nAgar kotak hijau di profil [github.com/Axlytic](https://github.com/Axlytic) tetap aktif dan konsisten! 🟩🔥",
+                "color": 16744448,
+                "footer": {
+                  "text": "Daily Consistency Reminder • Zenrixa Portfolio"
+                }
+              }]
+            }' \
+            $DISCORD_WEBHOOK
