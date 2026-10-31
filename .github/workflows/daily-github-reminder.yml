@@ -1,0 +1,47 @@
+name: Daily GitHub Notification Reminder
+
+on:
+  schedule:
+    # 14:00 UTC = 22:00 WITA / UTC+8 (Setiap jam 10 malam)
+    - cron: '0 14 * * *'
+  workflow_dispatch: # Tombol "Run workflow" untuk uji coba langsung kapan saja
+
+jobs:
+  create-reminder-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create Daily Reminder Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toLocaleDateString('id-ID', {
+              timeZone: 'Asia/Makassar',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            });
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `⏰ [Daily Reminder] Waktunya Hijaukan GitHub! (${today})`,
+              body: `### 🟩 Waktunya Review Progres & Hijaukan GitHub Hari Ini!
+
+Halo @${context.repo.owner}! Jam sudah menunjukkan pukul **22:00**.
+
+**Checklist Hari Ini:**
+- [ ] Belajar sintaks JavaScript / konsep web modern
+- [ ] Eksperimen kode di proyek portofolio Zenrixa
+- [ ] Jalankan \`git add .\`, \`git commit\`, dan \`git push\`
+
+---
+> 💡 **Trik Ampuh (Jika Laptop Sedang Mati):**
+> Kamu bisa langsung membalas (*comment*) atau menutup (*close issue*) ini langsung dari aplikasi **GitHub Mobile** di HP-mu.
+> Aktivitas tersebut resmi dihitung sebagai kontribusi dan **langsung membuat profil GitHub-mu hijau hari ini!** 🚀`,
+              assignees: [context.repo.owner],
+              labels: ['daily-reminder', 'consistency']
+            });
+
+            console.log(`Berhasil membuat issue pengingat: ${issue.data.html_url}`);
